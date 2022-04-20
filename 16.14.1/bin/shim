@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+export NODE_PATH='/Users/jumpei/dev/zoom-video-sdk-web-1.2.3/16.14.1/lib/node_modules'
+export NPM_CONFIG_PREFIX='/Users/jumpei/dev/zoom-video-sdk-web-1.2.3/16.14.1'
+export npm_config_prefix='/Users/jumpei/dev/zoom-video-sdk-web-1.2.3/16.14.1'
+exec '16.14.1/bin/node' "$@"
