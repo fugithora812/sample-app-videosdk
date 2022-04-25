@@ -199,7 +199,7 @@ const PreviewContainer = () => {
 
   const history = useHistory();
   const StartLive = () => {
-    history.push('/live_zoom');
+    history.push(`/live_zoom?isStartedVideo=${isStartedVideo}&isStartedAudio=${isStartedAudio}&isMuted=${isMuted}`);
   };
   
   return (

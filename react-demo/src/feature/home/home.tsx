@@ -17,7 +17,7 @@ const Home: React.FunctionComponent<HomeProps> = (props) => {
   };
   const featureList = [
     {
-      key: 'video',
+      key: 'live_zoom',
       icon: 'icon-meeting',
       title: 'Audio, video and share',
       description:

@@ -5,6 +5,8 @@ import React, {
   useEffect,
   MutableRefObject,
 } from 'react';
+import { useLocation, useHistory } from 'react-router-dom';
+
 import classNames from 'classnames';
 import { message } from 'antd';
 import ZoomContext from '../../../context/zoom-context';
@@ -20,6 +22,7 @@ import { isAndroidBrowser, isSupportOffscreenCanvas } from '../../../utils/platf
 import { getPhoneCallStatusDescription, SELF_VIDEO_ID } from '../video-constants';
 import { getRecordingButtons, RecordButtonProps, RecordingButton } from './recording';
 import { DialoutState, RecordingStatus,MutedSource,AudioChangeAction, DialOutOption, VideoCapturingState } from '@zoom/videosdk';
+
 interface VideoFooterProps {
   className?: string;
   shareRef?: MutableRefObject<HTMLCanvasElement | null>;
@@ -28,6 +31,11 @@ interface VideoFooterProps {
 
 const isAudioEnable = typeof AudioWorklet === 'function';
 const VideoFooter = (props: VideoFooterProps) => {
+  const search = useLocation().search;
+  const query = new URLSearchParams(search);
+
+  const zmClient = useContext(ZoomContext);
+
   const { className, shareRef, sharing } = props;
   const [isStartedAudio, setIsStartedAudio] = useState(false);
   const [isStartedVideo, setIsStartedVideo] = useState(false);
@@ -47,7 +55,51 @@ const VideoFooter = (props: VideoFooterProps) => {
   const { mediaStream } = useContext(ZoomMediaContext);
   const recordingClient = useContext(RecordingContext);
   const [recordingStatus, setRecordingStatus] = useState<'' | RecordingStatus>(recordingClient?.getCloudRecordingStatus() || '');
-  const zmClient = useContext(ZoomContext);
+  const history = useHistory();
+
+  // プレビューからの状態引き継ぎ
+  useEffect(() => {
+    // カメラ状態の引き継ぎ
+    const startedVideo =  async () => {
+      if (query.get('isStartedVideo')==='true') {
+        if (
+          isAndroidBrowser() ||
+          (isSupportOffscreenCanvas() && !mediaStream?.isSupportMultipleVideos())
+        ) {
+          const videoElement = document.querySelector(
+            `#${SELF_VIDEO_ID}`,
+          ) as HTMLVideoElement;
+          if (videoElement) {
+            await mediaStream?.startVideo({ videoElement });
+          }
+        } else {
+          await mediaStream?.startVideo({hd:true});
+        }
+        setIsStartedVideo(true);
+      }
+      history.push('/live_zoom');
+    }
+    startedVideo();
+  });
+
+  // オーディオ（マイク・スピーカー）状態の引き継ぎ
+  useEffect(() => {
+    const startedAudio= async () => {
+      if (query.get('isStartedAudio')==='true') {
+        await mediaStream?.startAudio();
+        await mediaStream?.muteAudio();
+        setIsStartedAudio(true);
+
+        if (query.get('isMuted')==='false') {
+          await mediaStream?.unmuteAudio();
+          setIsMuted(false);
+        }
+      }
+      history.push('/live_zoom');
+    };
+    startedAudio();
+  });
+
   const onCameraClick = useCallback(async () => {
     if (isStartedVideo) {
       await mediaStream?.stopVideo();
@@ -70,6 +122,7 @@ const VideoFooter = (props: VideoFooterProps) => {
       setIsStartedVideo(true);
     }
   }, [mediaStream, isStartedVideo]);
+
   const onMicrophoneClick = useCallback(async () => {
     if (isStartedAudio) {
       if (isMuted) {
@@ -84,6 +137,7 @@ const VideoFooter = (props: VideoFooterProps) => {
       setIsStartedAudio(true);
     }
   }, [mediaStream, isStartedAudio, isMuted]);
+
   const onMicrophoneMenuClick = async (key: string) => {
     if (mediaStream) {
       const [type, deviceId] = key.split('|');
