@@ -1,4 +1,12 @@
-import React, { useCallback, useContext, useEffect, useState, useRef } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+  MutableRefObject
+} from 'react';
+import { useHistory } from 'react-router-dom';
 import produce from 'immer';
 import ZoomVideo from "@zoom/videosdk";
 import { useMount } from '../../hooks';
@@ -7,7 +15,6 @@ import MicrophoneButton from '../video/components/microphone';
 import CameraButton from '../video/components/camera';
 import { message } from 'antd';
 import { MediaDevice } from '../video/video-types';
-import { ScreenShareButton } from '../video/components/screen-share';
 
 // label: string;
 // deviceId: string;
@@ -104,7 +111,7 @@ const decodePreviewOptions = (val: number) => {
   const isStartedAudio = !!((val & AUDIO_MASK) === AUDIO_MASK);
   const isMuted = !!((val & MIC_MASK) === MIC_MASK);
   const isStartedVideo = !!((val & VIDEO_MASK) === VIDEO_MASK);
-  return { isStartedVideo, isMuted, isStartedAudio };
+  return { isStartedVideo, isMuted, isStartedAudio }
 };
 
 const PreviewContainer = () => {
@@ -190,11 +197,16 @@ const PreviewContainer = () => {
     });
   });
 
+  const history = useHistory();
+  const StartLive = () => {
+    history.push('/live_zoom');
+  };
+  
   return (
     <div className="js-preview-view">
       <div id="js-preview-view" className="container preview__root">
         <span>
-          <h1>Audio And Video Preview!</h1>
+          <h1>Audio And Video Preview</h1>
         </span>
         <div className="container video-app">
           <video
@@ -221,10 +233,7 @@ const PreviewContainer = () => {
               cameraList={cameraList}
               activeCamera={activeCamera}
             />
-            <ScreenShareButton 
-              isStartedScreenShare={false}
-              onScreenShareClick={onCameraClick}
-            />
+            <button onClick={StartLive}> start live </button>
           </div>
         </div>
       </div>
