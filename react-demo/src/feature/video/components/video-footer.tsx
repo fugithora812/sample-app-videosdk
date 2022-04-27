@@ -57,9 +57,8 @@ const VideoFooter = (props: VideoFooterProps) => {
   const [recordingStatus, setRecordingStatus] = useState<'' | RecordingStatus>(recordingClient?.getCloudRecordingStatus() || '');
   const history = useHistory();
 
-  // プレビューからの状態引き継ぎ
+  // カメラ状態の引き継ぎ
   useEffect(() => {
-    // カメラ状態の引き継ぎ
     const startedVideo =  async () => {
       if (query.get('isStartedVideo')==='true') {
         if (
