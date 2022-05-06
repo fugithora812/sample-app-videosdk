@@ -33,7 +33,9 @@ const zmClient = ZoomVideo.createClient();
 ReactDOM.render(
   <React.StrictMode>
     <ZoomContext.Provider value={zmClient}>
-      <App meetingArgs={meetingArgs as any} />
+      <App
+        meetingArgs={meetingArgs as any} 
+      />
     </ZoomContext.Provider>
   </React.StrictMode>,
   document.getElementById('root'),

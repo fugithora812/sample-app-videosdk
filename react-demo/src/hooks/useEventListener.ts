@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react';
 import { MutableRefObject } from 'react';
+
 export function useEventListener(
   target:
     | MutableRefObject<HTMLElement | null | undefined>
@@ -12,8 +13,10 @@ export function useEventListener(
 ) {
   const handlerRef = useRef<Function>();
   handlerRef.current = handler;
+
   useEffect(() => {
     let targetElement: null | Window | HTMLElement = null;
+
     if (!target) {
       targetElement = window;
     } else if (Object.hasOwnProperty.call(target, 'current')) {
@@ -21,6 +24,7 @@ export function useEventListener(
     } else {
       targetElement = target as HTMLElement;
     }
+
     if (targetElement && targetElement.addEventListener) {
       const eventListener = (event: Event) =>
         handlerRef.current && handlerRef.current(event);
@@ -34,6 +38,7 @@ export function useEventListener(
         });
       };
     }
+    
     return () => {
       //
     };

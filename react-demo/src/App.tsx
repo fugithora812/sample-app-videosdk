@@ -103,16 +103,20 @@ function App(props: AppProps) {
       try {
         setLoadingText("Joining the session...");
         await zmClient.join(topic, signature, name, password);
+
         const stream = zmClient.getMediaStream();
         setMediaStream(stream);
         setIsSupportGalleryView(stream.isSupportMultipleVideos());
+
         const chatClient = zmClient.getChatClient();
         const commandClient = zmClient.getCommandClient();
         const recordingClient = zmClient.getRecordingClient();
+
         setChatClient(chatClient);
         setCommandClient(commandClient);
         setRecordingClient(recordingClient);
         setIsLoading(false);
+
       } catch (e) {
         setIsLoading(false);
         message.error(e.reason);
@@ -123,6 +127,7 @@ function App(props: AppProps) {
       ZoomVideo.destroyClient();
     };
   }, [sdkKey, signature, zmClient, topic, name, password]);
+
   const onConnectionChange = useCallback(
     (payload) => {
       if (payload.state === ConnectionState.Reconnecting) {
@@ -173,6 +178,7 @@ function App(props: AppProps) {
       message.warn("You have left the session.");
     }
   }, [zmClient, status, topic, signature, name, password]);
+
   useEffect(() => {
     zmClient.on("connection-change", onConnectionChange);
     zmClient.on("media-sdk-change", onMediaSDKChange);
@@ -184,6 +190,7 @@ function App(props: AppProps) {
       zmClient.off("dialout-state-change", onDialoutChange);
       zmClient.off("merged-audio", onAudioMerged);
     };
+
   }, [zmClient, onConnectionChange, onMediaSDKChange, onDialoutChange, onAudioMerged]);
   return (
     <div className="App">
@@ -222,6 +229,7 @@ function App(props: AppProps) {
                   component={Preview}
                 />
                 <Route path="/video" component={isSupportGalleryView ? Video : VideoSingle} />
+
                 <Route path="/chat" component={Chat} />
                 <Route path="/command" component={Command} />
               </Switch>
