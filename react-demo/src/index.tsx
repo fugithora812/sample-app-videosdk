@@ -10,13 +10,20 @@ import { devConfig } from './config/dev';
 import { generateVideoToken } from './utils/util';
 
 let meetingArgs: any = Object.fromEntries(new URLSearchParams(location.search));
+
+meetingArgs.sdkKey = devConfig.sdkKey;
+meetingArgs.sdkSecret = devConfig.sdkSecret;
+meetingArgs.name = devConfig.name;
+meetingArgs.password = devConfig.password;
+meetingArgs.signature = devConfig.signature;
+
 if (
-  !meetingArgs.sdkKey ||
-  !meetingArgs.topic ||
-  !meetingArgs.name ||
-  !meetingArgs.signature
+  !meetingArgs.topic
+  // !meetingArgs.sdkKey ||
+  // !meetingArgs.name ||
+  // !meetingArgs.signature
 ) {
-  meetingArgs = devConfig;
+  meetingArgs.topic = devConfig.topic;
 }
 if (!meetingArgs.signature && meetingArgs.sdkSecret && meetingArgs.topic) {
   meetingArgs.signature = generateVideoToken(
@@ -28,6 +35,7 @@ if (!meetingArgs.signature && meetingArgs.sdkSecret && meetingArgs.topic) {
     ''
   );
 }
+
 console.log('meetingArgs', meetingArgs);
 const zmClient = ZoomVideo.createClient();
 ReactDOM.render(

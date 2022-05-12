@@ -96,7 +96,7 @@ function App(props: AppProps) {
     true
   );
   const zmClient = useContext(ZoomContext);
-  
+
   useEffect(() => {
     const init = async () => {
       await zmClient.init("en-US", `${window.location.origin}/lib`, 'zoom.us');
